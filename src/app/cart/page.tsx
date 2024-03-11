@@ -1,5 +1,6 @@
 'use client'
 
+import PaymentPopup from '@/components/PaymentPopup'
 import { Button } from '@/components/ui/button'
 import { PRODUCT_CATEGORIES } from '@/config'
 import { useCart } from '@/hooks/use-cart'
@@ -13,7 +14,8 @@ import { useEffect, useState } from 'react'
 
 const Page = () => {
   const { items, removeItem } = useCart()
-
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const handleClosePopup = () => setIsPopupOpen(false);
   const router = useRouter()
 
   const { mutate: createCheckoutSession, isLoading } =
@@ -37,6 +39,11 @@ const Page = () => {
 
   const fee = 1
 
+  const totalPrice = items.reduce(
+    (total, { product }) => total + product.price,
+    0
+  ) + fee;
+  const KenyanPrice = totalPrice * 140
   return (
     <div className='bg-white'>
       <div className='mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8'>
@@ -95,7 +102,7 @@ const Page = () => {
                       <div className='flex-shrink-0'>
                         <div className='relative h-24 w-24'>
                           {typeof image !== 'string' &&
-                          image.url ? (
+                            image.url ? (
                             <Image
                               fill
                               src={image.url}
@@ -211,19 +218,21 @@ const Page = () => {
               <Button
                 disabled={items.length === 0 || isLoading}
                 onClick={() =>
-                  createCheckoutSession({ productIds })
+                  setIsPopupOpen(true)
                 }
                 className='w-full'
                 size='lg'>
                 {isLoading ? (
                   <Loader2 className='w-4 h-4 animate-spin mr-1.5' />
                 ) : null}
-                Checkout
+                Checkout with M-PESA
               </Button>
+
             </div>
           </section>
         </div>
       </div>
+      {isPopupOpen && <PaymentPopup onClose={handleClosePopup} totalPrice={KenyanPrice}/>}
     </div>
   )
 }
