@@ -23,9 +23,7 @@ const PaymentPopup: React.FC<PaymentPopupProps> = ({ onClose, totalPrice }) => {
         phone,
         amount,
       });
-      if(response.data.ResponseCode ==="0"){
         console.log('Payment initiated:', response.data);
-      }
      
      
     } catch (error) {
